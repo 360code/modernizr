@@ -1,27 +1,3 @@
-/*!
- * Modernizr v2.6.2
- * www.modernizr.com
- *
- * Copyright (c) Faruk Ates, Paul Irish, Alex Sexton
- * Available under the BSD and MIT licenses: www.modernizr.com/license/
- */
-
-/*
- * Modernizr tests which native CSS3 and HTML5 features are available in
- * the current UA and makes the results available to you in two ways:
- * as properties on a global Modernizr object, and as classes on the
- * <html> element. This information allows you to progressively enhance
- * your pages with a granular level of control over the experience.
- *
- * Modernizr has an optional (not included) conditional resource loader
- * called Modernizr.load(), based on Yepnope.js (yepnopejs.com).
- * To get a build that includes Modernizr.load(), as well as choosing
- * which tests to include, go to www.modernizr.com/download/
- *
- * Authors        Faruk Ates, Paul Irish, Alex Sexton
- * Contributors   Ryan Seddon, Ben Alman
- */
-
 window.Modernizr = (function( window, document, undefined ) {
 
     var version = '2.6.2',
@@ -33,6 +9,7 @@ window.Modernizr = (function( window, document, undefined ) {
     enableClasses = true,
     /*>>cssclasses*/
 
+    // the <html> element for HTML documents
     docElement = document.documentElement,
 
     /**
@@ -51,6 +28,7 @@ window.Modernizr = (function( window, document, undefined ) {
     smile = ':)',
     /*>>smile*/
 
+    // 保存一个原生 toString 方法
     toString = {}.toString,
 
     // TODO :: make the prefixes more granular
@@ -60,6 +38,14 @@ window.Modernizr = (function( window, document, undefined ) {
     /*>>prefixes*/
 
     /*>>domprefixes*/
+    // snote: 对于仅仅是浏览器厂商私有支持的 style 属性，命名形如：
+    //   elem.style.WebkitBorderRadius
+    //   elem.style.MozBorderRadius
+    // 对于W3标准支持的 style 属性，命名形如：
+    //   elem.style.borderRadius
+    // 但是 Webkit 的私有属性两种风格都支持：
+    //   elem.style.WebkitBorderRadius
+    //   elem.style.webkitBorderRadius
     // Following spec is to expose vendor-specific style properties as:
     //   elem.style.WebkitBorderRadius
     // and the following would be incorrect:
