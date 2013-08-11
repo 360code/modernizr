@@ -38,21 +38,18 @@ window.Modernizr = (function( window, document, undefined ) {
     /*>>prefixes*/
 
     /*>>domprefixes*/
-    // snote: 对于仅仅是浏览器厂商私有支持的 style 属性，命名形如：
-    //   elem.style.WebkitBorderRadius
-    //   elem.style.MozBorderRadius
-    // 对于W3标准支持的 style 属性，命名形如：
-    //   elem.style.borderRadius
-    // 但是 Webkit 的私有属性两种风格都支持：
-    //   elem.style.WebkitBorderRadius
-    //   elem.style.webkitBorderRadius
-    // Following spec is to expose vendor-specific style properties as:
-    //   elem.style.WebkitBorderRadius
-    // and the following would be incorrect:
-    //   elem.style.webkitBorderRadius
-
-    // Webkit ghosts their properties in lowercase but Opera & Moz do not.
-    // Microsoft uses a lowercase `ms` instead of the correct `Ms` in IE8+
+    /*
+     * snote: 对于仅仅是浏览器厂商私有支持的 style 属性，命名形如：
+     *   elem.style.WebkitBorderRadius
+     *   elem.style.MozBorderRadius
+     * 对于W3标准支持的 style 属性，命名形如：
+     *   elem.style.borderRadius
+     * 但是 Webkit 的私有属性两种风格都支持：
+     *   elem.style.WebkitBorderRadius
+     *   elem.style.webkitBorderRadius (incorrect form but we can use)
+     * Microsoft uses a lowercase `ms` instead of the correct `Ms` in IE8+
+     *   elem.style.msBorderRadius
+     */
     //   erik.eae.net/archives/2008/03/10/21.48.10/
 
     // More here: github.com/Modernizr/Modernizr/issues/issue/21
@@ -79,6 +76,11 @@ window.Modernizr = (function( window, document, undefined ) {
 
 
     /*>>teststyles*/
+    /*
+     * snote: an important function (Modernizr.testStyles)
+     * docs: http://modernizr.com/docs/#teststyles
+     * create a div and apply the rule, the div created before will be removed after testing.
+     */
     // Inject element with style element and some CSS rules
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
 
@@ -115,7 +117,7 @@ window.Modernizr = (function( window, document, undefined ) {
           fakeBody.style.background = '';
           //Safari 5.13/5.1.4 OSX stops loading if ::-webkit-scrollbar is used and scrollbars are visible
           fakeBody.style.overflow = 'hidden';
-          docOverflow = docElement.style.overflow;
+          docOverflow = docElement.style.overflow; // cache original status
           docElement.style.overflow = 'hidden';
           docElement.appendChild(fakeBody);
       }
@@ -124,7 +126,7 @@ window.Modernizr = (function( window, document, undefined ) {
       // If this is done after page load we don't want to remove the body so check if body exists
       if ( !body ) {
           fakeBody.parentNode.removeChild(fakeBody);
-          docElement.style.overflow = docOverflow;
+          docElement.style.overflow = docOverflow;  // restore
       } else {
           div.parentNode.removeChild(div);
       }
@@ -135,11 +137,12 @@ window.Modernizr = (function( window, document, undefined ) {
     /*>>teststyles*/
 
     /*>>mq*/
+    // aka. Modernizr.mq
     // adapted from matchMedia polyfill
     // by Scott Jehl and Paul Irish
     // gist.github.com/786768
     testMediaQuery = function( mq ) {
-      // my: 这里可以考虑提到外面去，在初始化时做一次判断，保存结果即可
+      // snote: 这里可以考虑提到外面去，在初始化时做一次判断，保存结果即可
       var matchMedia = window.matchMedia || window.msMatchMedia;
       if ( matchMedia ) {
         return matchMedia(mq).matches;
