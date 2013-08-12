@@ -701,8 +701,6 @@ window.Modernizr = (function( window, document, undefined ) {
         return bool;
     };
 
-
-
     // These tests evaluate support of the video/audio elements, as well as
     // testing what types of content they support.
     //
@@ -759,7 +757,6 @@ window.Modernizr = (function( window, document, undefined ) {
 
         return bool;
     };
-
 
     // In FF4, if disabled, window.localStorage should === null.
 
@@ -925,11 +922,8 @@ window.Modernizr = (function( window, document, undefined ) {
     }
     /*>>webforms*/
 
-
     // End of test definitions
     // -----------------------
-
-
 
     // Run through all tests and detect their support in the current UA.
     // todo: hypothetically we could be doing an array of tests and use a basic loop here.
