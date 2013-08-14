@@ -144,7 +144,6 @@ window.Modernizr = (function( window, document, undefined ) {
     // by Scott Jehl and Paul Irish
     // gist.github.com/786768
     testMediaQuery = function( mq ) {
-      // snote: 这里可以考虑提到外面去，在初始化时做一次判断，保存结果即可
       var matchMedia = window.matchMedia || window.msMatchMedia;
       if ( matchMedia ) {
         return matchMedia(mq).matches;
@@ -283,7 +282,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
     /**
      * setCssAll extrapolates all vendor-specific css strings.
-     * prefixes is ['-webkit-', '-moz-', '-o-', '-ms-']
+     * prefixes 是浏览器私有前缀的数组
      * 这个私有方法目前只调用了一次： setCssAll('opacity:.55');
      * "opacity:.55;-webkit-opacity:.55;-moz-opacity:.55;-o-opacity:.55;-ms-opacity:.55;"
      */
@@ -306,28 +305,14 @@ window.Modernizr = (function( window, document, undefined ) {
     }
 
     /*>>testprop*/
-
-    // testProps is a generic CSS / DOM property test.
-
-    // In testing support for a given CSS property, it's legit to test:
-    //    `elem.style[styleName] !== undefined`
-    // If the property is supported it will return an empty string,
-    // if unsupported it will return undefined.
-
-    // We'll take advantage of this quick test and skip setting a style
-    // on our modernizr element, but instead just testing undefined vs
-    // empty string.
-
-    // Because the testing of the CSS property names (with "-", as
-    // opposed to the camelCase DOM properties) is non-portable and
-    // non-standard but works in WebKit and IE (but not Gecko or Opera),
-    // we explicitly reject properties with dashes so that authors
-    // developing in WebKit or IE first don't end up with
-    // browser-specific content by accident.
-
+    // testProps 测试一般的 CSS 或 DOM 属性的支持情况.
+    // 不支持就返回 false， 支持返回 true 或 css 属性名（根据prefixed 的值而定）
+    // props 是一个数组或对象（通常是数组），只要有一个满足就返回结果
     function testProps( props, prefixed ) {
         for ( var i in props ) {
             var prop = props[i];
+            // 首先排除带特定前缀的；
+            // 元素如果支持某个属性，则 elem.style[styleName] 将返回空字符串或具体值；
             if ( !contains(prop, "-") && mStyle[prop] !== undefined ) {
                 return prefixed == 'pfx' ? prop : true;
             }
@@ -336,17 +321,18 @@ window.Modernizr = (function( window, document, undefined ) {
     }
     /*>>testprop*/
 
-    // TODO :: add testDOMProps
     /**
      * testDOMProps is a generic DOM property test; if a browser supports
      *   a certain property, it won't return undefined for it.
+     *   该方法仅在 testPropsAll 中被调用
+     *   props 是一个数组或对象（通常是数组），只要有一个满足就返回结果
      */
     function testDOMProps( props, obj, elem ) {
         for ( var i in props ) {
-            var item = obj[props[i]];
+            var item = obj[props[i]]; // 获得测试的对应测试函数或string值
             if ( item !== undefined) {
-
-                // return the property name as a string
+                // 返回对应的属性名，通常用于获取带前缀的DOM属性名，可以参考 M.prefixed
+                // http://modernizr.com/docs/#prefixed
                 if (elem === false) return props[i];
 
                 // let's bind a function
@@ -372,20 +358,21 @@ window.Modernizr = (function( window, document, undefined ) {
     function testPropsAll( prop, prefixed, elem ) {
 
         var ucProp  = prop.charAt(0).toUpperCase() + prop.slice(1),
-            props   = (prop + ' ' + cssomPrefixes.join(ucProp + ' ') + ucProp).split(' ');
+            // cssomPrefixes is ['Webkit', 'Moz', 'O', 'ms']
+            props   = (prop + ' ' + cssomPrefixes.join(ucProp + ' ') + ucProp).split(' '); // 获得所有形式的DOM属性名；
 
         // did they call .prefixed('boxSizing') or are we just testing a prop?
+       // M.prefixed('boxSizing', 'pfx') , M.prefixed('boxSizing')
         if(is(prefixed, "string") || is(prefixed, "undefined")) {
-          return testProps(props, prefixed);
-
+          return testProps(props, prefixed);  // 有可能返回 false, true, 'boxSizing', 'MozBoxSizing'
         // otherwise, they called .prefixed('requestAnimationFrame', window[, elem])
         } else {
+          // // domPrefixes is ['webkit', 'moz', 'o', 'ms']
           props = (prop + ' ' + (domPrefixes).join(ucProp + ' ') + ucProp).split(' ');
           return testDOMProps(props, prefixed, elem);
         }
     }
     /*>>testallprops*/
-
 
     /**
      * Tests 省略一堆 tests -> tests.js
@@ -404,7 +391,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
     /*>>webforms*/
     // input tests need to run.
-    Modernizr.input || webforms();
+    Modernizr.input || webforms(); // 为什么这里要做一次检测，又多余？
     /*>>webforms*/
 
     /**
@@ -508,7 +495,7 @@ window.Modernizr = (function( window, document, undefined ) {
     /*>>prefixed*/
     // Modernizr.prefixed() returns the prefixed or nonprefixed property name variant of your input
     // Modernizr.prefixed('boxSizing') // 'MozBoxSizing'
-    // 属性必须以 dom 风格的驼峰标识出入，不能使用中划线分隔风格例如：`box-sizing` ，返回值也是驼峰标识的。
+    // 属性必须以 dom 风格的驼峰标识传入，不能使用中划线分隔风格例如：`box-sizing` ，返回值也是驼峰标识的。
     Modernizr.prefixed      = function(prop, obj, elem){
       if(!obj) {
         return testPropsAll(prop, 'pfx');
